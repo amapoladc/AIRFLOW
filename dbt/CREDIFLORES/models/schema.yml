@@ -1,0 +1,221 @@
+version: 2
+
+###############################################################################
+# ⬤  SNAPSHOTS
+###############################################################################
+snapshots:
+  - name: base_snapshot
+    description: >
+      Snapshot histórico de la tabla **base**.  
+      Guarda la versión vigente por UNIQUE_ID, priorizando RESPOND = 1 y el
+      TIME_STAMP más reciente.
+    columns:
+      - name: UNIQUE_ID
+        description: Identificador único de la persona.
+        tests: [unique, not_null]
+
+      - name: TIME_STAMP
+        description: Marca temporal de la versión del registro.
+        tests: [not_null]
+
+      - name: RESPOND
+        description: Indicador de respuesta (1 = respondió, 0 = no).
+
+
+###############################################################################
+# ⬤  MODELOS
+###############################################################################
+models:
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # 0) RAW / BASE
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: base
+    description: |
+      Tabla consolidada de cartera para análisis y gestión de obligaciones.
+    columns:
+      - name: UNIQUE_ID
+        description: Identificador único basado en CEDULA, TARJETA_DIG y TIME_STAMP
+        tests: [unique, not_null]
+
+      - name: NOMBRE_COMPLETO
+        description: Nombre completo del titular
+
+      - name: CEDULA
+        description: Número de identificación
+        tests: [not_null]
+
+      - name: DIRECCION
+        description: Dirección de residencia
+
+      - name: CELULAR
+        description: Número celular de contacto
+
+      - name: VALOR_TOTAL_DEUDA
+        description: Valor total de la obligación
+
+      - name: SALDO_CAPITAL
+        description: Saldo de capital pendiente
+
+      - name: PAGO_MINIMO
+        description: Valor mínimo de pago
+
+      - name: DIAS_MORA
+        description: Días de mora acumulados
+
+      - name: TARJETA
+        description: Código del tipo de obligación
+
+      - name: MARCA
+        description: Modalidad / marca de crédito
+
+      - name: CALIFICACION
+        description: Calificación de mora
+
+      - name: TARJETA_DIG
+        description: Número de la obligación
+
+      - name: TIPO_OPERACION
+        description: Clasificación de la cartera
+
+      - name: FECHA_CORTE
+        description: Fecha de corte
+
+      - name: BUCKET
+        description: Segmento de antigüedad
+
+      - name: ESTADO_PRD
+        description: Estado del producto (ACTIVO, CASTIGADO, VENCIDO)
+
+      - name: EDAD
+        description: Edad del titular
+
+      - name: FECHA_PAGO
+        description: Última fecha de pago
+
+      - name: CAMPANIA
+        description: Campaña asignada (si aplica)
+
+      - name: ESTADO_CONVENIO
+        description: Estado del convenio (si aplica)
+
+      - name: CAP_VENCIDO_CV
+        description: Capital vencido (Cartera vigente)
+
+      - name: INTERESES
+        description: Intereses corrientes
+
+      - name: CALCULO_MORA
+        description: Intereses de mora
+
+      - name: SEG_DE_VIDA_CV
+        description: Seguro de vida (cartera vigente)
+
+      - name: SALDO_CAPITAL_C
+        description: Saldo capital (cartera castigada)
+
+      - name: P_CONDONACION_CAPITAL
+        description: Percenage condonación de capital
+
+      - name: VR_MAX_COND_CAP
+        description: Valor máx. condonación capital
+
+      - name: INTERESES_CTES
+        description: Intereses corrientes (castigada)
+
+      - name: P_COND_INT
+        description: Percenage condonación intereses corrientes
+
+      - name: VR_MAX_COND_INT
+        description: Valor máx. condonación intereses corrientes
+
+      - name: INTERESES_MORA
+        description: Intereses de mora (castigada)
+
+      - name: P_COND_INT_1
+        description: Percenage condonación intereses de mora
+
+      - name: VR_MAX_COND_INT_M
+        description: Valor máx. condonación intereses de mora
+
+      - name: VR_MAX_COND
+        description: Valor total máx. a condonar
+
+      - name: TOTAL_RECUP_CREDIFLORES
+        description: Total a recuperar para Crediflores
+
+      - name: VR_HONORARIOS
+        description: Honorarios de cobranza
+
+      - name: VL_MIN_PAGO
+        description: Valor mínimo de pago total
+
+      - name: ANO_CASTIGO
+        description: Años transcurridos desde el castigo
+
+      - name: F_CASTIGO
+        description: Fecha de castigo
+
+      - name: INSTANCIA_DE_COBRO
+        description: Instancia de cobro (pre-jurídica, jurídica…)
+
+      - name: TIME_STAMP
+        description: Fecha de procesamiento de la fila
+
+      - name: NOMBRE
+        description: Primer nombre del titular
+
+      - name: APELLIDO
+        description: Primer apellido del titular
+
+      - name: RESPOND
+        description: Estado numérico (0 = Inactiva, 1 = Activa, 2 = Castigada)
+        tests:
+          - accepted_values:
+              values: [0, 1, 2]
+
+      - name: POLITICA
+        description: Política de cobranza aplicada (valor fijo 0)
+
+      - name: SESION
+        description: Identificador de sesión (valor fijo 0)
+
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # 1) STAGE  –– cred_inc
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: cred_inc
+    description: |
+      Modelo incremental que ingiere **base_snapshot**, elimina duplicados
+      por (UNIQUE_ID, TIME_STAMP) y conserva la fila con mayor prioridad RESPOND.
+    columns:
+      - name: UNIQUE_ID
+        description: Identificador único de la persona
+        tests: [unique, not_null]
+
+      - name: TIME_STAMP
+        description: Marca temporal del registro
+        tests: [not_null]
+
+      - name: RESPOND
+        description: Indicador de respuesta (1 = respondió)
+
+
+  # ────────────────────────────────────────────────────────────────────────────
+  # 2) MART  –– mart_base
+  # ────────────────────────────────────────────────────────────────────────────
+  - name: mart_base
+    description: |
+      Data-mart final para dashboards.  
+      Contiene un único registro vigente por UNIQUE_ID con todos los campos
+      relevantes de crédito y cobranzas.
+    columns:
+      - name: UNIQUE_ID
+        description: Identificador único
+        tests: [unique, not_null]
+
+      - name: TIME_STAMP
+        description: Fecha de última actualización
+        tests: [not_null]
+
+

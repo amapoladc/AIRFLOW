@@ -1,0 +1,16 @@
+.env.dev
+comands.txt
+dbt/GENERALI/gcp/
+dbt/PRODUBANCO/gcp/
+airflow/logs/scheduler/latest/
+airflow/logs
+airflow/gcp/
+airflow/gcp/dbt_test.json
+airflow/dags/__pycache__/
+__pycache__/
+*.pyc
+airflow/data/Extracted_generali
+airflow/data/Extracted_sftp_crediflores
+airflow/data/Extracted_sftp
+docker-compose.yaml
+

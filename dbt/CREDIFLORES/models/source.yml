@@ -1,0 +1,22 @@
+version: 1
+
+sources:
+  - name: raw_data
+    schema: crediflores_prod
+    tables:
+      - name: DATA_WAREHAUSE_BL_COBRANZA
+        identifier: DATA_WAREHAUSE_BL_COBRANZA
+      - name: DATA_WAREHAUSE_CLEAN
+        identifier: DATA_WAREHAUSE_CLEAN
+      - name: cred_clients_intents
+        identifier: cred_clients_intents
+      - name: cred_intents
+        identifier: cred_intents
+      - name: stg_bl_keys
+        identifier: stg_bl_keys
+
+
+
+
+
+

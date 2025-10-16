@@ -1,0 +1,215 @@
+version: 2
+
+docs:
+  doc: index
+models:
+  - name: call_data     # Must match the name of the .sql file (without .sql)
+    description: "Final merged call data with adjusted phone numbers and timestamps."
+    columns:
+      - name: numero_entrada_llamada
+        description: "Número de entrada de la llamada, con conversión y limpieza."
+
+      - name: identificador_operador
+        description: "Identificador del operador o agente que atendió la llamada."
+
+      - name: start_time
+        description: "Hora de inicio ajustada según la duración de espera, para llamadas abandonadas."
+
+      - name: end_time
+        description: "Hora en que terminó la llamada."
+
+      - name: wait_duration
+        description: "Duración de espera antes de contestar."
+
+      - name: call_duration
+        description: "Duración total de la llamada (excluyendo el tiempo de espera)."
+
+      - name: call_status
+        description: "Estado de la llamada (e.g., Abandoned, Completed, etc.)."
+
+      - name: direct_inward_dialing
+        description: "Información de DID (Direct Inward Dialing)."
+
+      - name: unique_id
+        description: "Identificador único de la llamada."
+
+      - name: portfolio
+        description: "Portfolio asociado a la llamada."
+
+      - name: attention_type
+        description: "Tipo de atención (e.g., soporte, ventas, etc.)."
+
+      - name: state
+        description: "Estado de la llamada, si aplica."
+
+      - name: reason
+        description: "Razón de la llamada, si aplica."
+
+      - name: call_source
+        description: "Fuente original de la llamada (e.g., inbound, outbound)."
+
+      - name: call_queue
+        description: "Cola de llamadas por la que pasó."
+
+      - name: call_type
+        description: "Tipo de la llamada (e.g., inbound, outbound)."
+
+      - name: call_transfer
+        description: "Marca si la llamada fue transferida."
+
+      - name: phone_number_y
+        description: "Segundo número de teléfono, si aplica."
+
+      - name: call_status_detail
+        description: "Detalle adicional sobre el estado de la llamada."
+
+      - name: datetime
+        description: "Fecha y hora (timestamp) de referencia."
+
+      - name: duration_seconds
+        description: "Duración total de la llamada en segundos."
+
+      - name: id_number
+        description: "ID asociado al cliente o usuario."
+
+      - name: first_name
+        description: "Nombre del cliente o usuario."
+
+      - name: last_name
+        description: "Apellido del cliente o usuario."
+
+      - name: fecha_carga
+        description: "Fecha de carga del registro."
+
+
+  - name: call_cleaning  # this must match the .sql filename (without .sql)
+    description: "Table summarizing call details, including wait/ call durations in seconds."
+
+    columns:
+      - name: numero_entrada_llamada
+        description: "Número de entrada de la llamada"
+
+      - name: hora_entrada_llamada
+        description: "Timestamp de inicio de la llamada"
+
+      - name: hora_entrada_file_espera
+        description: "Timestamp en que la llamada entra a la fila de espera (no se usa en este caso)"
+
+      - name: hora_llamada_atendida_operador
+        description: "Timestamp en que el operador respondió la llamada"
+
+      - name: hora_llamada_desligada
+        description: "Timestamp en que finalizó la llamada"
+
+      - name: hora_llamada_abandonada
+        description: "Timestamp en que se abandonó la llamada (si aplica)"
+
+      - name: tiempo_de_llamada
+        description: "Duración de la llamada, sin incluir el tiempo de espera (en segundos)"
+
+      - name: tiempo_de_espera
+        description: "Duración de la espera antes de ser atendido, en segundos"
+
+      - name: tiempo_en_mute
+        description: "Tiempo en mute (columna reservada, sin cálculos)"
+
+      - name: identificador_operador
+        description: "Identificador único del operador o agente"
+
+      - name: call_status
+        description: "Estatus de la llamada (ej. Abandoned, Completed, etc.)"
+
+      - name: direct_inward_dialing
+        description: "DID o número de marcación interna directa"
+
+      - name: unique_id
+        description: "Identificador único de la llamada"
+        tests:
+          - not_null
+          - unique
+
+      - name: portfolio
+        description: "Nombre o categoría del portafolio asociado"
+
+      - name: attention_type
+        description: "Tipo de atención (ej. soporte, ventas, etc.)"
+
+      - name: state
+        description: "Estado de la llamada o del registro"
+
+      - name: reason
+        description: "Razón o motivo de la llamada"
+
+      - name: call_source
+        description: "Fuente de la llamada (ej. inbound, outbound)"
+
+      - name: fecha_carga
+        description: "Fecha en que se cargó este registro"
+
+  - name: mart_calls  # Este nombre debe coincidir con el archivo .sql (sin la extensión)
+    description: >
+      Modelo incremental que consolida las llamadas limpiadas desde `call_cleaning`.
+      Solo agrega registros nuevos basándose en la columna `fecha_carga`.
+
+    columns:
+      - name: numero_entrada_llamada
+        description: "Número de teléfono que originó la llamada."
+
+      - name: hora_entrada_llamada
+        description: "Fecha y hora en que se originó la llamada."
+
+      - name: hora_entrada_file_espera
+        description: "Timestamp de entrada en la fila de espera (si aplica)."
+
+      - name: hora_llamada_atendida_operador
+        description: "Fecha y hora en que el operador atendió la llamada."
+
+      - name: hora_llamada_desligada
+        description: "Fecha y hora en que la llamada terminó."
+
+      - name: hora_llamada_abandonada
+        description: "Fecha y hora en que la llamada fue abandonada."
+
+      - name: tiempo_de_llamada
+        description: "Duración de la llamada (excluyendo espera), en segundos."
+
+      - name: tiempo_de_espera
+        description: "Duración de la espera antes de ser atendido, en segundos."
+
+      - name: tiempo_en_mute
+        description: "Tiempo en mute (reservado para futuro uso)."
+
+      - name: identificador_operador
+        description: "Identificador único del agente que atendió la llamada."
+
+      - name: call_status
+        description: "Estado de la llamada (Abandoned, Completed, etc.)."
+
+      - name: direct_inward_dialing
+        description: "Número DID (Direct Inward Dialing)."
+
+      - name: unique_id
+        description: "Identificador único de la llamada."
+        tests:
+          - not_null
+          - unique
+
+      - name: portfolio
+        description: "Categoría o cartera a la que pertenece la llamada."
+
+      - name: attention_type
+        description: "Tipo de atención brindada."
+
+      - name: state
+        description: "Estado relacionado a la llamada o usuario."
+
+      - name: reason
+        description: "Razón o motivo de la llamada."
+
+      - name: call_source
+        description: "Fuente de la llamada (ej. inbound, outbound, transferencia)."
+
+      - name: fecha_carga
+        description: "Fecha de carga del registro en el sistema."
+        tests:
+          - not_null

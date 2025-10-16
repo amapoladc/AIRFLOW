@@ -1,0 +1,21 @@
+
+
+WITH difusion_data AS (
+    SELECT
+        CAST(CEDULA AS STRING)          AS CEDULA,
+        CAST(CELULAR AS STRING)         AS CELULAR,
+        CAST(CARTERA AS INT64)          AS CARTERA,
+        CAST(CAMPANIA AS INT64)         AS CAMPANIA,
+        CAST(CONTACT_ID AS INT64)       AS CONTACT_ID,
+        CAST(MESSAGE_ID AS INT64)       AS MESSAGE_ID,
+        CAST(TEMPLATE AS STRING)        AS TEMPLATE,
+        CAST(ULTIMO_ESTADO_MSJ AS STRING) AS ULTIMO_ESTADO_MSJ,
+        CAST(STATUS AS INT64)           AS STATUS,
+        CAST(CREATED_AT AS TIMESTAMP)   AS CREATED_AT,
+        CAST(UPDATED_AT AS TIMESTAMP)   AS UPDATED_AT,
+        CAST(MSG_ERROR AS STRING)       AS MSG_ERROR,
+        CAST(DIFUSION_ID AS STRING)     AS DIFUSION_ID
+    FROM {{ source('raw_data', 'prod_cliente_difusiones') }}
+)
+
+SELECT * FROM difusion_data

@@ -1,0 +1,14 @@
+WITH client_intents AS (
+    SELECT
+        CAST(CEDULA AS STRING) AS CEDULA,
+        CAST(INTENT AS STRING) AS INTENT,  
+        CAST(CREATED_AT AS DATETIME) AS CREATED_AT
+    FROM {{ source('raw_data', 'prod_clients_intents') }}
+)
+SELECT 
+    CEDULA, 
+    INTENT, 
+    CREATED_AT,
+    EXTRACT(HOUR FROM CREATED_AT) AS HOUR,
+    EXTRACT(MINUTE FROM CREATED_AT) AS MINUTE
+FROM client_intents

@@ -1,0 +1,24 @@
+name: 'generali'  # O usa 'generali' si prefieres reflejar el dataset fuente
+version: '1.0.0'
+
+profile: 'generali'
+
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  generali:  # <--- Asegúrate de que coincida con la carpeta bajo "models/"
+    bronze:
+      +materialized: table
+    silver:
+      +materialized: table
+    gold:
+      +materialized: table

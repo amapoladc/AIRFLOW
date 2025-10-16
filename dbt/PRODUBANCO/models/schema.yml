@@ -1,0 +1,312 @@
+version: 2
+
+models:
+  - name: cobranza
+    description: "Tabla que contiene información de cobranza con los datos más recientes por CEDULA."
+    columns:
+      - name: NOMBRE_COMPLETO
+        description: "Nombre completo del cliente."
+        tests:
+          - not_null
+      - name: CEDULA
+        description: "Número de cédula del cliente."
+        tests:
+          - not_null
+          - unique
+      - name: CORREO
+        description: "Correo electrónico del cliente."
+      - name: DIRECCION
+        description: "Dirección del cliente."
+      - name: CELULAR
+        description: "Número de celular del cliente."
+      - name: VALOR_TOTAL_DEUDA
+        description: "Valor total de la deuda del cliente."
+      - name: SALDO_CAPITAL
+        description: "Saldo de capital pendiente del cliente."
+      - name: PAGO_MINIMO
+        description: "Monto mínimo a pagar."
+      - name: VALOR_NO_CUBIERTO
+        description: "Monto no cubierto en la deuda."
+      - name: DIAS_MORA
+        description: "Número de días de mora."
+      - name: TARJETA
+        description: "Número de tarjeta del cliente."
+      - name: MARCA
+        description: "Marca de la tarjeta."
+      - name: CALIFICACION
+        description: "Calificación del cliente."
+      - name: TARJETA_DIG
+        description: "Número de tarjeta digital."
+      - name: TIPO_OPERACION
+        description: "Tipo de operación realizada."
+      - name: FECHA_CORTE
+        description: "Fecha de corte de la deuda."
+      - name: FECHA_PAGO
+        description: "Fecha en que se realizó el pago."
+      - name: BUCKET
+        description: "Categoría de segmentación de la deuda."
+      - name: ESTADO_PRD
+        description: "Estado del producto financiero del cliente."
+      - name: EDAD
+        description: "Edad del cliente."
+      - name: VALIDACION
+        description: "Estado de validación del cliente."
+      - name: CAMPANIA
+        description: "Nombre de la campaña en la que se incluyó al cliente."
+      - name: TIME_STAMP
+        description: "Marca de tiempo de la última actualización del registro."
+      - name: NOMBRE
+        description: "Nombre del cliente."
+      - name: APELLIDO
+        description: "Apellido del cliente."
+      - name: RESPOND
+        description: "Indicador de respuesta del cliente."
+      - name: FECHA_PROCESO
+        description: "Fecha de procesamiento del dato."
+        tests:
+          - not_null
+
+
+  - name: convenio
+    description: "Tabla procesada desde raw_data.DATA_WAREHAUSE_BL_CONVENIO, filtrando la fila más reciente por cédula."
+    columns:
+      - name: NOMBRE_COMPLETO
+        description: "Nombre completo del cliente."
+        tests:
+          - not_null
+
+      - name: CEDULA
+        description: "Número de cédula, formateado mediante format_ID_EC."
+        tests:
+          - not_null
+          - unique
+
+      - name: DIRECCION
+        description: "Dirección del cliente, con valores nulos convertidos."
+
+      - name: CELULAR
+        description: "Número de celular."
+
+      - name: CORREO
+        description: "Correo electrónico, valor de ejemplo."
+
+      - name: CRD
+        description: "Código relacionado con el cliente."
+
+      - name: VALOR_TOTAL_DEUDA
+        description: "Total de la deuda, procesado con parse_money()."
+        tests:
+          - not_null
+
+      - name: SALDO_CAPITAL
+        description: "Saldo de capital, procesado con parse_money()."
+
+      - name: PAGO_MINIMO
+        description: "Pago mínimo requerido, procesado con parse_money()."
+
+      - name: VALOR_NO_CUBIERTO
+        description: "Valor no cubierto, procesado con parse_money()."
+
+      - name: DIAS_MORA
+        description: "Número de días en mora."
+
+      - name: TARJETA
+        description: "Número de la tarjeta."
+
+      - name: MARCA
+        description: "Marca de la tarjeta."
+
+      - name: CALIFICACION
+        description: "Calificación del cliente."
+
+      - name: TARJETA_DIG
+        description: "Número de la tarjeta digital."
+
+      - name: TIPO_OPERACION
+        description: "Tipo de operación financiera."
+
+      - name: FECHA_CORTE
+        description: "Fecha de corte, procesada con parse_date_safe()."
+        tests:
+          - not_null
+
+      - name: BUCKET
+        description: "Segmentación o agrupación del cliente."
+
+      - name: ESTADO_PRD
+        description: "Estado del producto financiero."
+
+      - name: EDAD
+        description: "Edad del cliente."
+
+      - name: FECHA_PAGO
+        description: "Fecha de pago, procesada con parse_date_safe()."
+
+      - name: CAMPANIA
+        description: "Nombre de la campaña de marketing o cobranza."
+
+      - name: ESTADO_CONVENIO
+        description: "Estado del convenio financiero."
+
+      - name: TIME_STAMP
+        description: "Marca de tiempo de la transacción, procesada con parse_date_safe()."
+
+      - name: NOMBRE
+        description: "Nombre del cliente."
+
+      - name: APELLIDO
+        description: "Apellido del cliente."
+
+      - name: RESPOND
+        description: "Indicador de respuesta (valor fijo: 1)."
+
+      - name: VALIDACION
+        description: "Estado de validación (valor fijo: 'ok')."
+
+      - name: FECHA_PROCESO
+        description: "Fecha actual del procesamiento con CURRENT_DATE()."
+
+
+  - name: union_tablas
+    description: "Este modelo fusiona datos de las tablas 'convenio' y 'cobranza' para obtener la información completa de los clientes, incluyendo detalles del estado de la deuda y otros datos relacionados."
+    columns:
+      - name: NOMBRE_COMPLETO
+        description: "Nombre completo del cliente."
+        tests:
+          - not_null
+      - name: CEDULA
+        description: "Cédula del cliente."
+        tests:
+          - not_null
+          - unique
+      - name: DIRECCION
+        description: "Dirección del cliente."
+      - name: CELULAR
+        description: "Número de celular del cliente."
+      - name: CORREO
+        description: "Correo electrónico del cliente."
+      - name: CRD
+        description: "Número de la tarjeta CRD."
+      - name: VALOR_TOTAL_DEUDA
+        description: "Valor total de la deuda del cliente."
+      - name: SALDO_CAPITAL
+        description: "Saldo de capital de la deuda."
+      - name: PAGO_MINIMO
+        description: "Pago mínimo de la deuda."
+      - name: VALOR_NO_CUBIERTO
+        description: "Valor no cubierto por la deuda."
+      - name: DIAS_MORA
+        description: "Número de días de mora en el pago de la deuda."
+      - name: TARJETA
+        description: "Número de la tarjeta."
+      - name: MARCA
+        description: "Marca de la tarjeta."
+      - name: CALIFICACION
+        description: "Calificación del cliente."
+      - name: TARJETA_DIG
+        description: "Número digital de la tarjeta."
+      - name: TIPO_OPERACION
+        description: "Tipo de operación realizada."
+      - name: FECHA_CORTE
+        description: "Fecha de corte de la deuda."
+      - name: BUCKET
+        description: "Categoría o bucket del cliente basado en la deuda."
+      - name: ESTADO_PRD
+        description: "Estado del producto asociado a la deuda."
+      - name: EDAD
+        description: "Edad del cliente."
+      - name: FECHA_PAGO
+        description: "Fecha de pago realizada."
+      - name: CAMPANIA
+        description: "Campaña de marketing relacionada al cliente."
+      - name: ESTADO_CONVENIO
+        description: "Estado del convenio del cliente. Puede ser NULL si no aplica."
+      - name: TIME_STAMP
+        description: "Marca temporal del registro."
+      - name: NOMBRE
+        description: "Primer nombre del cliente."
+      - name: APELLIDO
+        description: "Apellido del cliente."
+      - name: RESPOND
+        description: "Resultado de la validación de contacto con el cliente."
+      - name: VALIDACION
+        description: "Resultado de la validación de contacto (ej. ok, incontactable)."
+      - name: FECHA_PROCESO
+        description: "Fecha en que se procesó el registro (se establece a la fecha actual en ambos orígenes)."
+
+
+
+# Si hay tablas adicionales o dependencias, las puedes incluir aquí
+
+
+  - name: prod_union  # Reemplaza con el nombre de tu modelo
+    description: "Este modelo procesa registros de clientes con información de convenios y validaciones, priorizando las respuestas y actualizando el estado del convenio."
+    columns:
+      - name: NOMBRE_COMPLETO
+        description: "Nombre completo del cliente."
+        tests:
+          - not_null
+          - unique
+      - name: CEDULA
+        description: "Cédula del cliente, clave única para este modelo."
+        tests:
+          - not_null
+          - unique
+      - name: DIRECCION
+        description: "Dirección del cliente."
+      - name: CELULAR
+        description: "Número de celular del cliente."
+        tests:
+          - not_null
+      - name: CORREO
+        description: "Correo electrónico del cliente."
+      - name: CRD
+        description: "Número de la tarjeta CRD."
+      - name: VALOR_TOTAL_DEUDA
+        description: "Valor total de la deuda del cliente."
+      - name: SALDO_CAPITAL
+        description: "Saldo de capital de la deuda."
+      - name: PAGO_MINIMO
+        description: "Pago mínimo de la deuda."
+      - name: VALOR_NO_CUBIERTO
+        description: "Valor no cubierto por la deuda."
+      - name: DIAS_MORA
+        description: "Número de días de mora en el pago de la deuda."
+      - name: TARJETA
+        description: "Número de la tarjeta."
+      - name: MARCA
+        description: "Marca de la tarjeta."
+      - name: CALIFICACION
+        description: "Calificación del cliente."
+      - name: TARJETA_DIG
+        description: "Número digital de la tarjeta."
+      - name: TIPO_OPERACION
+        description: "Tipo de operación realizada."
+      - name: FECHA_CORTE
+        description: "Fecha de corte de la deuda."
+      - name: BUCKET
+        description: "Categoría o bucket del cliente basado en la deuda."
+      - name: ESTADO_PRD
+        description: "Estado del producto asociado a la deuda."
+      - name: EDAD
+        description: "Edad del cliente."
+      - name: FECHA_PAGO
+        description: "Fecha de pago realizada."
+      - name: CAMPANIA
+        description: "Campaña de marketing relacionada al cliente."
+      - name: ESTADO_CONVENIO
+        description: "Estado del convenio del cliente."
+      - name: TIME_STAMP
+        description: "Marca temporal del registro."
+      - name: NOMBRE
+        description: "Primer nombre del cliente."
+      - name: APELLIDO
+        description: "Apellido del cliente."
+      - name: RESPOND
+        description: "Resultado de la validación de contacto con el cliente."
+      - name: VALIDACION
+        description: "Resultado de la validación de contacto (ej. ok, incontactable)."
+      - name: FECHA_PROCESO
+        description: "Fecha en que se procesó el registro."
+
+

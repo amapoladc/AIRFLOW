@@ -1,0 +1,18 @@
+version: 1
+
+sources:
+  - name: raw_data
+    schema: produbanco_dev
+    tables:
+      - name: DATA_WAREHAUSE_BL_CONVENIO
+        identifier: DATA_WAREHAUSE_BL_CONVENIO
+      - name: DATA_WAREHAUSE_BL_COBRANZA
+        identifier: DATA_WAREHAUSE_BL_COBRANZA
+      - name: prod_clients_intents
+        identifier: prod_clients_intents
+      - name: prod_cliente_difusiones
+        identifier: prod_cliente_difusiones
+
+
+
+

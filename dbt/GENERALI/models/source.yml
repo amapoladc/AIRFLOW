@@ -1,0 +1,7 @@
+version: 1
+
+sources:
+  - name: raw_data
+    schema: generali  # <--- en minúsculas, debe coincidir con BigQuery exactamente
+    tables:
+      - name: DATA_WAREHAUSE_FINAL_MERGE

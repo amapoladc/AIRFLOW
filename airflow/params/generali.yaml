@@ -1,0 +1,66 @@
+project: GENERALI
+description: Parámetros del pipeline ETL + dbt
+
+common:
+  base_local_path: /opt/airflow/data/Extracted_generali
+  gcp_credentials: /opt/airflow/gcp/dbt_test.json
+  dbt_profiles_dir: /home/airflow/.dbt
+  run_date_fmt: "%Y-%m-%d"
+
+# --- Selenium (PCW1) ---
+PCW1:
+  user_name: ${ENV:GEN_USER|mparedes}         # ok to keep ENV fallback
+  user_password: ${ENV:GEN_PASS|mparedes1234} # ok to keep ENV fallback
+  local_path: /opt/airflow/data/Extracted_generali
+  timeDelta: 1
+  outputFileName: SIT_LZ_CALLDETAIL.csv
+  inputFileType: csv
+  normalize_df: true
+  pre_transformation: true
+  inputFileColRange: false
+  inputFileHeader: 0
+  inputFileSheet: false
+  inputFileSeparator: false
+  inputFileRequired: false
+  cleanColText: false
+  cleanColNumeric: false
+  cleanColDate: false
+
+# --- Merge process (PM1) ---
+PM1:
+  local_path: /opt/airflow/data/Extracted_generali
+  final_file_name: SIT_LZ_FINAL_MERGE
+
+# --- GCS Upload (PCGCS1) ---
+PCGCS1:
+  local_path: /opt/airflow/data/Extracted_generali
+  bucket_name: generali_call
+  inputFileName: SIT_LZ_FINAL_MERGE
+  outputFileName: SIT_BK_FINAL_MERGE
+
+# --- BigQuery Load (PCBQ1) ---
+PCBQ1:
+  bucket_name: generali_call/raw
+  source_objects: RAW_SIT_BK_FINAL_MERGE.parquet
+  project_id: ${ENV:GCP_PROJECT|memorialtechnologies-245614}  # keep ENV or hardcode if you prefer
+  dataset_name: generali
+  table_name: DATA_WAREHAUSE_FINAL_MERGE
+  truncate_drop_into: DROP
+
+# --- Emails (MAIL) ---
+MAIL:
+  send_to_client: torosalgado.jt@gmail.com
+  send_to: jtoro@amapola.tech
+
+# --- dbt configuration (DBT) ---
+DBT:
+  project_dir: /opt/airflow/dbt/GENERALI
+  profiles_dir: /home/airflow/.dbt
+  profiles_src: /opt/airflow/dbt/GENERALI/profiles.yml
+  credentials_path: /opt/airflow/gcp/dbt_test.json
+  threads: 4
+  full_refresh: false
+  models:
+    bronze: [call_data]
+    silver: [call_cleaning]
+    gold:   [mart_calls]

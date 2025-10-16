@@ -1,0 +1,25 @@
+# Airflow providers que usas
+apache-airflow-providers-docker==3.10.0
+apache-airflow-providers-google==12.0.0
+apache-airflow-providers-postgres==6.3.0
+apache-airflow-providers-redis==3.6.0
+
+# dbt (BigQuery)
+dbt-bigquery==1.8.2
+
+# Core data
+pandas==2.1.4
+numpy==1.26.4
+pyarrow==20.0.0
+openpyxl==3.1.2
+sweetviz==2.3.1
+
+# Cloud & storage
+google-cloud-bigquery[pandas,bqstorage]==3.34.0
+google-cloud-storage==2.16.0
+
+# Conectores & utilidades
+mysql-connector-python==9.3.0
+paramiko==3.4.0
+selenium==4.20.0
+sendgrid==6.9.7
